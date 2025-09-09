@@ -20,34 +20,47 @@ Use Cases:
 
 ## Prerequisites
 
-1. AWS Account with appropriate permissions to create Lambda functions, API Gateway, and S3 buckets.
-2. Passion to Learn!
+ AWS Account with appropriate permissions to create Lambda functions, API Gateway, and S3 buckets.
+
 
 ## Steps to Deploy
 
 * Step 1: Create an S3 bucket to store uploaded files:
   ```bash
-  my-file-sharing-bucket-amc
+  filesharing.bucket
   ```
+ ![img](https://github.com/riyaj-2002/serverless-file-sharing/blob/e46852148d0960e2eb73612d4a20aef5c30c925d/Screenshot%202025-09-08%20180008.png)
 
+  
 * Step 2: Create the Lambda function to handle file uploads (UploadFunction): \
-  Name: UploadFunction \
+  Name: filesharing_uploadfunction \
   Runtime: Python 3.x \
   Execution role: IAM role with S3 write permissions \
   Code: Use the UploadFunction Python code.
 
-* Step 3: Create the Lambda function to handle file downloads (DownloadFunction): \
-  Name: DownloadFunction \
+* Step 3: Create a lambda role with custom policy (iam_policy.json):
+   ```bash
+  lambda_s3role
+  ```
+![img](https://github.com/riyaj-2002/serverless-file-sharing/blob/04222116f769473b34657ccd98c8a8620792163e/Screenshot%202025-09-08%20180129.png)
+
+
+* Step 4: Create the Lambda function to handle file downloads (DownloadFunction): \
+  Name: filesharing_downloadfunction \
   Runtime: Python 3.x \
   Execution role: IAM role with S3 write permissions \
   Code: Use the DownloadFunction Python code.
 
-* Step 4: Create an API Gateway \
-  Name: my-file-sharing-api-amc \
+  ![img](https://github.com/riyaj-2002/serverless-file-sharing/blob/e46852148d0960e2eb73612d4a20aef5c30c925d/Screenshot%202025-09-08%20180030.png)
+  
+* Step 5: Create an API Gateway \
+  Name: filesharing.api \
   Create two resources: /files with POST and GET methods. \
   For each method, configure Lambda integration with UploadFunction and DownloadFunction respectively. 
 
-* Step 5: Configure GET Method: \
+![img](https://github.com/riyaj-2002/serverless-file-sharing/blob/e46852148d0960e2eb73612d4a20aef5c30c925d/Screenshot%202025-09-08%20180333.png)
+
+* Step 6: Configure GET Method: \
   Method Request --> Edit --> Request validator --> Validate Query String Parameters and Headers \
   Method Request --> Edit --> Request Body --> text/plain \
   Integration Request --> Edit --> Mapping Templates --> Content Type: application/json --> Content Body: 
@@ -59,7 +72,8 @@ Use Cases:
     }
   }
   ```
-* Step 6: Configure POST Method: \
+  
+* Step 7: Configure POST Method: \
   Integration Request --> Edit --> Mapping Templates --> Content Type: text/plain --> Content Body: \
 
   ```bash
@@ -70,12 +84,13 @@ Use Cases:
     }
   }
   ```
-* Step 7: Deploy API Gateway: \
+  
+* Step 8: Deploy API Gateway: \
   Deploy the API to a stage (e.g., dev): \
   Click on "Actions" > "Deploy API". \
   Choose your stage (e.g., dev) and deploy. 
 
-* Step 8: Testing \
+* Step 9: Testing \
     1. Upload a File \
        Use Postman or another HTTP client: \
        POST to https://<api-id>.execute-api.<region>.amazonaws.com/dev/files?fileName=test.txt \
@@ -88,7 +103,7 @@ Use Cases:
        ```bash
        curl --location 'https://<api-id>.execute-api.<region>.amazonaws.com/dev/files?fileName=test.txt' \
        --header 'Content-Type: text/plain' \
-       --data 'Hello World from A Monk in Cloud!'
+       --data 'This is a serverless file sharing platform!!'
        ```
 
     3. Download a File \
